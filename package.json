@@ -23,5 +23,8 @@
     "p5": "^1.2.0",
     "style.css": "^1.0.0",
     "tone": "^14.7.77"
+  },
+  "devDependencies": {
+    "cssnano": "^4.1.10"
   }
 }
