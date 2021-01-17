@@ -1,5 +1,7 @@
 <html>
 <head>
+  <script src='./WebMIDIAPI.min.js'></script>
+  <!--<script src='https://cwilso.github.com/WebMIDIAPIShim/build/WebMIDIAPI.min.js'></script>-->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.58/Tone.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tensorflow/1.2.8/tf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@magenta/music@^1.0.0/es6/core.js"></script>
@@ -9,10 +11,17 @@
 <body>
 
 
-  <div id="controls">
-    <button id="play">Play</button>
-    <button id="start">Start</button>
-  </div>
+  <div id="controls"></div>
+
+  <div id="staff0"></div>
+  <!--<svg id="roll0"></svg>
+  <div id="waterfall0"></div>
+  -->
+  <div id="staff1"></div>
+  <div id="staff2"></div>
+  <div id="staff3"></div>
+
+
   <script src="./index.js"></script>
 </body>
 </html>

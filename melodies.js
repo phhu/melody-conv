@@ -14,6 +14,7 @@ var MELODY1 = {
   quantizationInfo:{stepsPerQuarter: 4},
   notes: [
     {pitch: toMidi('A3'), quantizedStartStep: 0, quantizedEndStep: 4},
+    //{pitch: toMidi('C3'), quantizedStartStep: 0, quantizedEndStep: 32},
     {pitch: toMidi('D4'), quantizedStartStep: 4, quantizedEndStep: 6},
     {pitch: toMidi('E4'), quantizedStartStep: 6, quantizedEndStep: 8},
     {pitch: toMidi('F4'), quantizedStartStep: 8, quantizedEndStep: 10},
