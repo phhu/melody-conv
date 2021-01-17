@@ -49,6 +49,24 @@ const src = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae
 const model = new music_vae.MusicVAE(src);
 const player = new core.Player();
 
+const prepare = Promise.all([
+  model.initialize(),
+  sfPlayer.loadAllSamples(),
+]);
+
+console.log("preparing");
+prepare.then((_) => {
+  console.log("prepared");
+  model.sample(2)
+  .then(samples => {
+    player.resumeContext();
+    sfPlayer.start(MELODY1);
+    //sfPlayer.start(samples[0]);
+    console.log(samples[0]);
+    console.log(MELODY1);
+  });
+});
+/*
 model
   .initialize()
   .then(() => model.sample(2))
@@ -59,5 +77,5 @@ model
     console.log(samples[0]);
     console.log(MELODY1);
   });
-
+*/
 //play a middle 'C' for the duration of an 8th note
