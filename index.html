@@ -10,19 +10,45 @@
 
 <body>
 
+  <h2> Melody conv</h2>
 
-  <div id="controls"></div>
 
-  <div id="staff0"></div>
-  <!--<svg id="roll0"></svg>
-  <div id="waterfall0"></div>
-  -->
-  <div id="staff1"></div>
-  <div id="staff2"></div>
-  <div id="staff3"></div>
+  <div style="margin-left:20px" id="status"></div>
+
+
+  <div class="melody" id="active">
+    <div id="staff0"></div>
+  </div>
+
+  <div class="between" id="beforeSamples"></div>
+
+  <div class="melody" id="sample1">
+    <div id="staff1"></div>
+  </div>
+  <div class="melody" id="sample2">
+    <div id="staff2"></div>
+  </div>
+  <div class="melody" id="sample3">
+    <div id="staff3"></div>
+  </div>
   
-  <div id="staffRec"></div>
+  <div class="between" id="afterSamples"></div>
 
+  <div class="melody" id="recording">
+    <div id="staffRec"></div>
+  </div>
+
+  <div class="between" id="afterRecording"></div>
+
+  <input type="checkbox" id="useClick">Use click
+  <select id="player">
+    <option>Basic player</option>
+    <option>Soundfont player</option>
+    <option>MIDI player</option>
+  </select>
+
+  <div id="controls">
+  </div>
 
   <script src="./index.js"></script>
 </body>
