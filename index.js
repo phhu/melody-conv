@@ -1,5 +1,5 @@
 //import * as Tone from 'tone';
-//import './style.css';
+import './style.css';
 
 //const core2 = require('@magenta/music/node/core');
 //const mvae = require('@magenta/music/node/music_vae');
@@ -8,9 +8,10 @@
 
 //create a synth and connect it to the main output (your speakers)
 
-const {MELODY1} = require('./melodies');
+const {MELODY1,TWINKLE_TWINKLE} = require('./melodies');
 const {sfPlayer} = require('./sfPiano');
 const {recorder} = require('./recorder');
+const {sequencesMatch} = require('./compareSequences');
 const seq = core.sequences;
 /*
 // https://tonejs.github.io/examples/polySynth
@@ -21,46 +22,50 @@ const makeNoise = () => {
   synth.triggerAttackRelease("C4", "8n"); 
   synth.triggerAttackRelease("E4", "8n"); 
   synth.triggerAttackRelease("G4", "4n"); 
-}
+} 
 */
 
 const makeButton = ({
   id,
+  parent = "controls",
   type = "button",
   fn = () =>console.log("clicked"),
 }={}) => {
   if (type==="br"){
     const br = document.createElement('br');
-    document.querySelector('#controls').appendChild(br);  
+    document.getElementById(parent).appendChild(br);  
   } else {
     const b = document.createElement('button');
     b.setAttribute('id',id);
     b.innerHTML = id;
-    document.querySelector('#controls').appendChild(b);
+    document.getElementById(parent).appendChild(b);
     document.getElementById(id).addEventListener('click',fn);   
   }
 }
 //control mapping
 [
-  {id: "play melody1", fn: ()=>{playMelody(activeMelody)} },
-  {id: "play sample1", fn: ()=>{playMelody(samples[0])} },  
-  {id: "play sample2", fn: ()=>{playMelody(samples[1])} },  
-  {id: "play sample3", fn: ()=>{playMelody(samples[2])} }, 
-  {type:"br"},
-  {id: "makeSimilar",  fn: ()=>{ makeSimilar({count:3})(activeMelody) } },  
-  {id: "choose1", fn: ()=>{chooseMelody(samples[0])} },  
-  {id: "choose2", fn: ()=>{chooseMelody(samples[1])} },  
-  {id: "choose3", fn: ()=>{chooseMelody(samples[2])} }, 
-  {type:"br"}, 
+  {parent: "active",  id: "play source", fn: ()=>{playMelody(activeMelody)} },
+  {parent: "sample1", id: "play variant 1", fn: ()=>{playMelody(samples[0])} },  
+  {parent: "sample2", id: "play variant 2", fn: ()=>{playMelody(samples[1])} },  
+  {parent: "sample3", id: "play variant 3", fn: ()=>{playMelody(samples[2])} }, 
+  {parent: "active", id: "makeSimilar",  fn: ()=>{ makeSimilar({count:3})(activeMelody) } },  
+  {parent: "sample1",id: "choose variant 1", fn: ()=>{chooseMelody(samples[0])} },  
+  {parent: "sample2",id: "choose variant 2", fn: ()=>{chooseMelody(samples[1])} },  
+  {parent: "sample3",id: "choose variant 3", fn: ()=>{chooseMelody(samples[2])} }, 
   //{id: "start",fn: ()=>Tone.start() },
   //{id: "playMidi",fn: ()=>midiPlayer.start(activeMelody) },
-  {id: "recStart",fn: ()=>{
+  {parent:"afterRecording",id: "RECORD (midi)",fn: ()=>{
     recorder.callbackObject = null;
+    recorder.enablePlayClick(
+      document.getElementById("useClick").checked
+    );
     recorder.start();
     console.log("recording start"); 
+    document.getElementById("RECORD (midi)").style['background-color'] =  'red'
   }},
-  {id: "recStop",fn: ()=>{
+  {parent:"afterRecording",id: "Stop REC",fn: ()=>{
     let rec = recorder.stop();
+    document.getElementById("RECORD (midi)").style['background-color'] =  'inherit'
     console.log("recording stop",rec);
     const stepsPerBeat = 4;
     //const stepsPerBar = 4 * stepsPerBeat;
@@ -68,15 +73,44 @@ const makeButton = ({
     const endTime = rec.notes[0] && rec.notes[rec.notes.length-1].endTime ;
     rec = seq.trim(rec,startTime,endTime);
     rec = seq.quantizeNoteSequence(rec,stepsPerBeat);
-    console.log("recording fixed",rec);
+    console.log("recording quantized and trimmed:",rec);
     recording = rec;    
     showRecording(rec);
+    testRecordings();
   }},
-  {id:"chooseRec", fn: () => {chooseMelody(recording);}},
-  {id:"playRec",   fn: () => {playMelody(recording);}},
+  {parent:"afterRecording",id:"Play recording",   fn: () => {playMelody(recording);testRecordings();}},
+  {parent:"afterRecording",id:"Choose recording", fn: () => {chooseMelody(recording);}},
+  //{parent:"afterRecording",id:"testRec",   fn: () => testRecordings()}
+  {parent: "active",id:"twinkle",   fn: () => chooseMelody(TWINKLE_TWINKLE)},
+  {parent: "active",id:"melody1",   fn: () => chooseMelody(MELODY1)},
 ].map(makeButton);
 
 let recording;
+
+const setStaffColor = (id,comparison) => {
+  const green = "rgba(0, 252, 0, 0.178)";
+  const match = sequencesMatch(recording,comparison);
+  document.getElementById(id).style['background-color'] = match ? green : 'inherit';
+  console.log(id,match);
+}
+
+const clearRecordingTest = () => {
+  ['staff0','staff1','staff2','staff3']
+    .forEach(id => 
+      document.getElementById(id).style['background-color'] =  'inherit'
+    )
+};
+
+const testRecordings = () => {
+  if(recording){
+    setStaffColor('staff0',activeMelody);
+    setStaffColor('staff1',samples[0]);
+    setStaffColor('staff2',samples[1]);
+    setStaffColor('staff3',samples[2]);
+  } else {
+    console.log("no recording to test!");
+  }
+};
 
 const showRecording = (rec) => {
   visualizeMelody({n:"Rec"})(rec);
@@ -107,11 +141,18 @@ const prepare = Promise.all([
 let samples;
 let activeMelody;
 
-console.log("preparing");
+const log = (msg) => {
+  document.getElementById('status').innerHTML = msg;
+  console.log(msg);
+}
+
+log("preparing. please wait");
 prepare.then((_) => {
-  console.log("prepared");
+  log("ready");
   //makeSamples();
-  chooseMelody(MELODY1);
+  chooseMelody(TWINKLE_TWINKLE);
+  sfPlayer.loadAllSamples().then(()=>log("loaded soundfont samples"));
+  //chooseMelody(MELODY1);
   //makeSimilar({count:3})(activeMelody)
 });
 
@@ -133,7 +174,12 @@ const makeSimilar = ({count=3}={}) => melody => {
 }
 
 const playMelody = melody => {
-  const p = midiPlayer;
+  const players = {
+    'MIDI player': midiPlayer,
+    'Basic player': player,
+    'Soundfont player': sfPlayer,
+  }
+  const p = players[document.getElementById('player').value] || player;
   p.resumeContext();
   try{p.stop();} catch(e){console.error("couldn't stop",e)}
   //player.start(melody);
@@ -144,12 +190,16 @@ const playMelody = melody => {
   console.log("playing",melody);
 }
 
+
+
 const chooseMelody = melody => {
   activeMelody = melody;
   visualizeMelody()(melody);
   makeSimilar()(activeMelody);
+  clearRecordingTest();
   return melody;
 };
+global.chooseMelody = chooseMelody;
 
 let staff;
 let roll;
