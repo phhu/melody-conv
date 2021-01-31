@@ -20,14 +20,15 @@ const makeButton = ({
 
 //control mapping
 const buttonSpecs = [
-  {parent: "melody1",  id: "play1", fn: ()=>()=>{playMelody(MELODY1)} },
-  {parent: "melody2",  id: "play2", fn: ()=>()=>{playMelody(MELODY2)} },
-  {parent: "controls",  id: "inter", fn: ()=>()=>{reinterpolate() }   },
+  {parent: "melody1",  id: "Play Under Pressure riff", fn: ()=>()=>{playMelody(MELODY1)} },
+  {parent: "melody2",  id: "Play Libertango riff", fn: ()=>()=>{playMelody(MELODY2)} },
+  {parent: "controls",  id: "Re-interpolate", fn: ()=>()=>{reinterpolate() }   },
 ];
 buttonSpecs.map(makeButton);
 
 
-const src = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_2bar_small';  // 'data/mel_small'
+//const src = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_2bar_small';  // 'data/mel_small'
+const src = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_4bar_med_q2';  // 'data/mel_small'
 const model = new music_vae.MusicVAE(src);
 const player = new core.Player();    // WithClick
 const midiPlayer = new core.MIDIPlayer();
