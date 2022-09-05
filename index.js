@@ -26,7 +26,6 @@ const buttonSpecs = [
 ];
 buttonSpecs.map(makeButton);
 
-
 //const src = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_2bar_small';  // 'data/mel_small'
 const src = 'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_4bar_med_q2';  // 'data/mel_small'
 const model = new music_vae.MusicVAE(src);
@@ -63,7 +62,6 @@ prepare.then((_) => {
 
 const getInterpolationCount = () => 10;
 
-
 const reinterpolate = () => {
   console.log("reinterpolating");
   interpolateMelodies()(MELODY1,MELODY2);
@@ -82,12 +80,12 @@ const interpolateMelodies = ({
   */
   model.interpolate([mel1,mel2],getInterpolationCount(),0.5)
   .then(newMelodies => {
-    console.log("interpolated:",newMelodies);
-    global.samples = newMelodies;
+    console.log("interpolated:",newMelodies)
+    global.samples = newMelodies
     const d = document.getElementById("interpolatedMelodies")
-    d.innerHTML="";
+    d.innerHTML=""
     global.samples.forEach((s,i)=>{
-      d.innerHTML+=`<div id="staffInt${i}"></div>`;
+      d.innerHTML+=`<div id="staffInt${i}"></div>`
       d.innerHTML+=`<button id="buttonInt${i}" onclick="console.log('playing Int${i}');playMelody(samples[${i}]);">Play Int ${i}</button>`;
       visualizeMelody({scoreDiv:"staffInt",n:i})(s);
       /*makeButton({
@@ -95,8 +93,8 @@ const interpolateMelodies = ({
         parent: `staffInt${i}`,
         fn: (() => () => {log("clicked "+ i)}),
       });*/
-    });
-  });
+    })
+  })
 }
 
 const playMelody = melody => {
